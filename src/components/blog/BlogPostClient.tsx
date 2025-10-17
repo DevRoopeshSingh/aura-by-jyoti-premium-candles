@@ -15,13 +15,20 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { blogPosts, type BlogPost } from "@/data/blog";
+import type { BlogPost } from "@/types/content";
 import { toast } from "sonner";
 
 interface BlogPostClientProps {
   post: BlogPost;
   relatedPosts: BlogPost[];
 }
+
+const formatPublishedDate = (iso: string) =>
+  new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(iso));
 
 const BlogPostClient = ({ post, relatedPosts }: BlogPostClientProps) => {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -45,13 +52,10 @@ const BlogPostClient = ({ post, relatedPosts }: BlogPostClientProps) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const enhancedRelatedPosts = useMemo(() => {
-    if (relatedPosts.length) {
-      return relatedPosts;
-    }
-
-    return blogPosts.filter((blogPost) => blogPost.id !== post.id).slice(0, 3);
-  }, [post.id, relatedPosts]);
+  const enhancedRelatedPosts = useMemo(
+    () => relatedPosts.filter((item) => item.id !== post.id),
+    [post.id, relatedPosts],
+  );
 
   const handleShare = useCallback(async () => {
     const shareData = {
@@ -97,7 +101,7 @@ const BlogPostClient = ({ post, relatedPosts }: BlogPostClientProps) => {
             <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-muted-foreground">
               <span className="inline-flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                {post.date}
+                {formatPublishedDate(post.publishedAt)}
               </span>
               <span className="inline-flex items-center gap-2">
                 <Clock className="h-4 w-4" />
@@ -210,7 +214,7 @@ const BlogPostClient = ({ post, relatedPosts }: BlogPostClientProps) => {
                   {enhancedRelatedPosts.map((related) => (
                     <Link
                       key={related.id}
-                      href={`/blog/${related.id}`}
+                      href={`/blog/${related.slug}`}
                       className="group overflow-hidden rounded-lg border border-border bg-card shadow-soft transition-elegant hover:shadow-elegant"
                     >
                       <div className="relative aspect-[16/10] overflow-hidden">
@@ -225,7 +229,7 @@ const BlogPostClient = ({ post, relatedPosts }: BlogPostClientProps) => {
                       <div className="space-y-3 p-6">
                         <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
                           <Calendar className="h-3.5 w-3.5" />
-                          {related.date}
+                          {formatPublishedDate(related.publishedAt)}
                         </div>
                         <h4 className="font-playfair text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
                           {related.title}
@@ -247,4 +251,3 @@ const BlogPostClient = ({ post, relatedPosts }: BlogPostClientProps) => {
 };
 
 export default BlogPostClient;
-

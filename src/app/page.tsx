@@ -1,13 +1,34 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Leaf, Heart, Sparkles } from "lucide-react";
+import { headers } from "next/headers";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/ProductCard";
-import { products } from "@/data/products";
 import heroImage from "@/assets/hero-candles.jpg";
+import { mapProductRecord } from "@/lib/content-mappers";
+import type { Product, ProductRecord } from "@/types/content";
 
-const HomePage = () => {
-  const featuredProducts = products.slice(0, 4);
+const getBaseUrl = () => {
+  const host = headers().get("host");
+  const protocol = process.env.VERCEL ? "https" : "http";
+  return `${protocol}://${host}`;
+};
+
+const fetchFeaturedProducts = async (): Promise<Product[]> => {
+  const res = await fetch(`${getBaseUrl()}/api/products?limit=4`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch featured products");
+  }
+
+  const data = (await res.json()) as { products: ProductRecord[] };
+  return data.products.map(mapProductRecord);
+};
+
+const HomePage = async () => {
+  const featuredProducts = await fetchFeaturedProducts();
 
   return (
     <div className="flex flex-col">

@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import ProductCard from "@/components/ProductCard";
-import type { Product } from "@/data/products";
+import type { Product } from "@/types/content";
 import AddToCartButton from "@/components/AddToCartButton";
 
 interface ProductDetailClientProps {
@@ -86,7 +86,7 @@ const ProductDetailClient = ({ product, relatedProducts }: ProductDetailClientPr
           <div className="space-y-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
             <div>
               <div className="mb-3 text-sm font-inter font-medium uppercase tracking-wider text-primary">
-                {product.category}
+                {product.category.name}
               </div>
               <h1 className="font-playfair text-4xl font-bold md:text-5xl">{product.name}</h1>
 

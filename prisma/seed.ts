@@ -1,37 +1,183 @@
-import type { StaticImageData } from "next/image";
-import heroImage from "@/assets/hero-candles.jpg";
+import { PrismaClient } from "@prisma/client";
 
-export interface BlogPostQuote {
-  text: string;
-  attribution?: string;
-}
+const prisma = new PrismaClient();
 
-export interface BlogPostSection {
-  heading?: string;
-  paragraphs: string[];
-  tips?: string[];
-  quote?: BlogPostQuote;
-}
+const categories = [
+  { id: "all", name: "All Products" },
+  { id: "diwali", name: "Diwali Collection" },
+  { id: "wellness", name: "Wellness Candles" },
+  { id: "heritage", name: "Mumbai Heritage" },
+  { id: "gifts", name: "Custom Gifts" },
+];
 
-export interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  date: string;
-  image: StaticImageData;
-  readingTime: string;
-  sections: BlogPostSection[];
-  takeaways: string[];
-}
-
-export const blogPosts: BlogPost[] = [
+const products = [
   {
-    id: "1",
+    id: "diwali-lotus-1",
+    name: "Lotus Diya Candle",
+    price: 350,
+    categoryId: "diwali",
+    image: "diwali-candle",
+    description:
+      "Celebrate the festival of lights with our handcrafted lotus-shaped candle. Infused with traditional Indian fragrances.",
+    features: ["100% Natural Soy Wax", "Eco-Friendly", "Long-lasting", "Hand-poured"],
+    scent: "Jasmine & Sandalwood",
+    burnTime: "25-30 hours",
+    size: "200g",
+  },
+  {
+    id: "diwali-rangoli-2",
+    name: "Rangoli Collection Set",
+    price: 400,
+    categoryId: "diwali",
+    image: "diwali-candle",
+    description:
+      "A beautiful set of colorful candles inspired by traditional rangoli patterns. Perfect for festive decorations.",
+    features: ["Set of 5 candles", "Natural wax", "Vibrant colors", "Gift-ready packaging"],
+    scent: "Mogra & Saffron",
+    burnTime: "20 hours each",
+    size: "5x100g",
+  },
+  {
+    id: "wellness-lavender-1",
+    name: "Serenity Lavender",
+    price: 300,
+    categoryId: "wellness",
+    image: "wellness-candle",
+    description:
+      "Relax and unwind with our calming lavender aromatherapy candle. Perfect for meditation and stress relief.",
+    features: ["Aromatherapy grade", "Soy wax blend", "Cotton wick", "Reusable container"],
+    scent: "Lavender & Chamomile",
+    burnTime: "30-35 hours",
+    size: "220g",
+  },
+  {
+    id: "wellness-eucalyptus-2",
+    name: "Breathe Easy Eucalyptus",
+    price: 320,
+    categoryId: "wellness",
+    image: "wellness-candle",
+    description:
+      "Refresh your space with invigorating eucalyptus. Ideal for creating a spa-like atmosphere at home.",
+    features: ["Pure essential oils", "Natural ingredients", "Handcrafted", "Eco-friendly"],
+    scent: "Eucalyptus & Peppermint",
+    burnTime: "28-32 hours",
+    size: "220g",
+  },
+  {
+    id: "heritage-gateway-1",
+    name: "Gateway of Mumbai",
+    price: 380,
+    categoryId: "heritage",
+    image: "heritage-candle",
+    description:
+      "A tribute to Mumbai's iconic Gateway of India. Rich, warm fragrance reminiscent of the colonial era.",
+    features: ["Heritage collection", "Premium wax", "Vintage design", "Limited edition"],
+    scent: "Tobacco & Amber",
+    burnTime: "32-35 hours",
+    size: "250g",
+  },
+  {
+    id: "heritage-marine-2",
+    name: "Marine Drive Sunset",
+    price: 360,
+    categoryId: "heritage",
+    image: "heritage-candle",
+    description:
+      "Capture the essence of Mumbai's famous Marine Drive at sunset with this oceanic fragrance.",
+    features: ["Inspired by Mumbai", "Sea salt notes", "Artisan crafted", "Unique blend"],
+    scent: "Sea Salt & Bergamot",
+    burnTime: "30 hours",
+    size: "230g",
+  },
+  {
+    id: "gifts-custom-1",
+    name: "Personalized Gift Box",
+    price: 400,
+    categoryId: "gifts",
+    image: "gift-candle",
+    description:
+      "Create lasting memories with our customizable gift box. Perfect for weddings, birthdays, and special occasions.",
+    features: ["Custom message card", "Elegant packaging", "Choice of scents", "Gift-ready"],
+    scent: "Your Choice",
+    burnTime: "25-30 hours",
+    size: "200g",
+  },
+  {
+    id: "gifts-duo-2",
+    name: "Wellness Duo Gift Set",
+    price: 550,
+    categoryId: "gifts",
+    image: "gift-candle",
+    description:
+      "Two premium wellness candles beautifully packaged. The perfect gift for someone special.",
+    features: ["2 premium candles", "Luxury packaging", "Gift message included", "Ready to gift"],
+    scent: "Lavender & Eucalyptus",
+    burnTime: "60 hours total",
+    size: "2x220g",
+  },
+  {
+    id: "diwali-deepak-3",
+    name: "Golden Deepak",
+    price: 280,
+    categoryId: "diwali",
+    image: "diwali-candle",
+    description:
+      "Traditional Indian deepak candle with a modern twist. Brings auspicious vibes to your home.",
+    features: ["Traditional design", "Eco-friendly wax", "Golden finish", "Festive fragrance"],
+    scent: "Kesar & Rose",
+    burnTime: "22-25 hours",
+    size: "180g",
+  },
+  {
+    id: "wellness-yoga-3",
+    name: "Yoga Flow",
+    price: 290,
+    categoryId: "wellness",
+    image: "wellness-candle",
+    description:
+      "Enhance your yoga practice with this specially blended aromatherapy candle.",
+    features: ["Meditation blend", "Natural wax", "Calming scent", "Eco-conscious"],
+    scent: "Sandalwood & Patchouli",
+    burnTime: "28 hours",
+    size: "210g",
+  },
+  {
+    id: "heritage-colaba-3",
+    name: "Colaba Causeway",
+    price: 340,
+    categoryId: "heritage",
+    image: "heritage-candle",
+    description:
+      "Experience the vibrant energy of Colaba Causeway with this eclectic fragrance blend.",
+    features: ["Mumbai heritage", "Unique scent profile", "Artisan quality", "Limited batch"],
+    scent: "Spice Market & Woods",
+    burnTime: "30 hours",
+    size: "220g",
+  },
+  {
+    id: "gifts-thank-you-3",
+    name: "Thank You Token",
+    price: 250,
+    categoryId: "gifts",
+    image: "gift-candle",
+    description:
+      "A thoughtful way to say thank you. Small but meaningful gesture in a beautiful package.",
+    features: ["Compact size", "Gift wrap included", "Sweet fragrance", "Affordable gifting"],
+    scent: "Vanilla & Honey",
+    burnTime: "18-20 hours",
+    size: "150g",
+  },
+];
+
+const blogPosts = [
+  {
+    id: "candle-care-guide",
     title: "The Complete Guide to Candle Care",
+    slug: "the-complete-guide-to-candle-care",
     excerpt:
       "Learn how to make your candles last longer and burn beautifully with these essential care tips.",
-    date: "March 15, 2024",
-    image: heroImage,
+    publishedAt: new Date("March 15, 2024"),
+    image: "hero-candles",
     readingTime: "6 min read",
     sections: [
       {
@@ -71,12 +217,13 @@ export const blogPosts: BlogPost[] = [
     ],
   },
   {
-    id: "2",
+    id: "lavender-aromatherapy-benefits",
     title: "Aromatherapy Benefits of Lavender Candles",
+    slug: "aromatherapy-benefits-of-lavender-candles",
     excerpt:
       "Discover how lavender-scented candles can improve your sleep, reduce stress, and enhance wellbeing.",
-    date: "March 10, 2024",
-    image: heroImage,
+    publishedAt: new Date("March 10, 2024"),
+    image: "hero-candles",
     readingTime: "5 min read",
     sections: [
       {
@@ -112,12 +259,13 @@ export const blogPosts: BlogPost[] = [
     ],
   },
   {
-    id: "3",
+    id: "diwali-traditions",
     title: "Diwali Traditions and Candle Rituals",
+    slug: "diwali-traditions-and-candle-rituals",
     excerpt:
       "Explore the significance of diyas and candles in Indian festivals and how to create beautiful arrangements.",
-    date: "March 5, 2024",
-    image: heroImage,
+    publishedAt: new Date("March 5, 2024"),
+    image: "hero-candles",
     readingTime: "7 min read",
     sections: [
       {
@@ -156,12 +304,13 @@ export const blogPosts: BlogPost[] = [
     ],
   },
   {
-    id: "4",
+    id: "eco-friendly-soy-candles",
     title: "Why Choose Eco-Friendly Soy Candles",
+    slug: "why-choose-eco-friendly-soy-candles",
     excerpt:
       "Understanding the environmental and health benefits of natural soy wax over paraffin candles.",
-    date: "February 28, 2024",
-    image: heroImage,
+    publishedAt: new Date("February 28, 2024"),
+    image: "hero-candles",
     readingTime: "5 min read",
     sections: [
       {
@@ -195,85 +344,83 @@ export const blogPosts: BlogPost[] = [
     ],
   },
   {
-    id: "5",
+    id: "perfect-home-ambiance",
     title: "Creating the Perfect Ambiance at Home",
+    slug: "creating-the-perfect-ambiance-at-home",
     excerpt:
-      "Tips and tricks for using candles to transform your living space into a serene sanctuary.",
-    date: "February 20, 2024",
-    image: heroImage,
+      "Layer lighting, scent, and styling with handcrafted candles to transform any room into a sanctuary.",
+    publishedAt: new Date("February 20, 2024"),
+    image: "hero-candles",
     readingTime: "6 min read",
     sections: [
       {
-        heading: "Define the Mood by Room",
+        heading: "Set the Mood with Layered Lighting",
         paragraphs: [
-          "Living rooms welcome warm, comforting scents—think amber, sandalwood, or spiced chai. Bathrooms shine with spa-like botanicals such as eucalyptus or lemongrass, while bedrooms thrive on soft florals.",
+          "Combine candles of varying heights with dimmable lamps to create depth and warmth. Place taller pillar candles at the back of your vignette and smaller votives upfront for a cascading glow.",
         ],
       },
       {
-        heading: "Layer Light for Depth",
+        heading: "Style with Intention",
         paragraphs: [
-          "Combine candles of different heights and vessels to create dimension. Use lanterns, votives, and taper candles on the same console for a curated look. Reflective trays or brass plates amplify the glow and keep surfaces protected.",
-          "Pay attention to sight lines: stagger candles in odd numbers and vary spacing. The dance of light instantly adds intimacy and sophistication.",
+          "Choose vessels that complement your room’s palette—earthy ceramics for boho spaces, brushed metal for minimal homes. Incorporate natural elements like dried flowers, crystals, or river stones to personalize the arrangement.",
         ],
         tips: [
-          "Mix in mirrors to bounce candlelight across the room.",
-          "Add fresh greenery or pampas grass for texture without overpowering the fragrance.",
-          "Keep unscented tealights on hand for dining tables to complement, not compete with, food aromas.",
+          "Use trays to ground your candle displays.",
+          "Add mirrors or reflective surfaces to amplify the glow.",
+          "Rotate your candle scents seasonally to keep the experience fresh.",
         ],
       },
       {
-        heading: "Build a Sensory Ritual",
+        heading: "Engage All Senses",
         paragraphs: [
-          "Pair candles with playlists, tactile throws, and herbal tea to turn everyday evenings into restorative rituals. Set a timer on your phone to remind you to extinguish the flame after four hours, ensuring safety while you unwind.",
+          "Pair candlelight with soft playlists and textiles that invite touch. Consider scent pairing—citrus for entertaining, florals for self-care, spices for dinner parties.",
         ],
       },
     ],
     takeaways: [
-      "Choose fragrance families that suit the personality of each room.",
-      "Layer heights, textures, and reflective surfaces for effortless ambiance.",
-      "Combine scent, sound, and touch to create rituals you’ll look forward to daily.",
-    ],
-  },
-  {
-    id: "6",
-    title: "Gift Ideas: Personalized Candle Sets",
-    excerpt:
-      "Make your gifts memorable with custom candle arrangements perfect for any occasion.",
-    date: "February 15, 2024",
-    image: heroImage,
-    readingTime: "5 min read",
-    sections: [
-      {
-        heading: "Start with a Signature Scent Story",
-        paragraphs: [
-          "Think about the recipient’s personality. Do they love breezy coastal escapes or cozy mountain retreats? Curate scents that evoke their favorite memories—lavender for the calm seeker, cardamom for the culinary explorer, or rose for the romantic.",
-        ],
-      },
-      {
-        heading: "Add Personalized Touches",
-        paragraphs: [
-          "Engraved lids, custom labels, or monogrammed matches elevate the unveiling. Include a handwritten note describing why you chose each scent and how to enjoy it best.",
-        ],
-        tips: [
-          "Bundle accessories like wick trimmers or snuffers for a complete experience.",
-          "Include a small journal so the recipient can jot down moments of gratitude each time they light the candle.",
-        ],
-      },
-      {
-        heading: "Package with Purpose",
-        paragraphs: [
-          "Reuse fabric wraps, cane baskets, or wooden boxes for eco-conscious gifting. Tuck in sprigs of dried flowers or spice bundles to add layers of scent even before the candles are lit.",
-        ],
-        quote: {
-          text: "A personalized candle gift is a love letter written in fragrance.",
-          attribution: "Jyoti, Founder of Aura by Jyoti",
-        },
-      },
-    ],
-    takeaways: [
-      "Choose scents that mirror the recipient’s story or aspirations.",
-      "Personalized touches transform candles into keepsakes.",
-      "Eco-friendly packaging completes the gifting ritual with intention.",
+      "Layered lighting creates a welcoming atmosphere instantly.",
+      "Thoughtful styling turns candles into meaningful décor.",
+      "Scent pairing helps define the mood of each room effortlessly.",
     ],
   },
 ];
+
+const seed = async () => {
+  await prisma.blogPost.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.category.deleteMany();
+
+  await prisma.category.createMany({
+    data: categories.filter((category) => category.id !== "all"),
+  });
+
+  for (const product of products) {
+    await prisma.product.create({
+      data: {
+        ...product,
+        features: JSON.stringify(product.features),
+      },
+    });
+  }
+
+  for (const post of blogPosts) {
+    await prisma.blogPost.create({
+      data: {
+        ...post,
+        sections: JSON.stringify(post.sections),
+        takeaways: JSON.stringify(post.takeaways),
+      },
+    });
+  }
+};
+
+seed()
+  .then(async () => {
+    await prisma.$disconnect();
+    console.log("🌟 Database seeded successfully");
+  })
+  .catch(async (error) => {
+    console.error("Seeding error:", error);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

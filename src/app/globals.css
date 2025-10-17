@@ -108,6 +108,37 @@ All colors MUST be HSL.
     --input: 30 15% 25%;
     --ring: 30 100% 60%;
   }
+
+  .black {
+    color-scheme: dark;
+    --background: 220 16% 6%;
+    --foreground: 0 0% 96%;
+
+    --card: 222 18% 9%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 222 18% 9%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 30 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 130 32% 28%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 12% 18%;
+    --muted-foreground: 220 10% 62%;
+
+    --accent: 45 100% 56%;
+    --accent-foreground: 30 30% 20%;
+
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 16%;
+    --input: 220 14% 16%;
+    --ring: 30 100% 60%;
+  }
 }
 
 @layer utilities {
@@ -149,4 +180,3 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
-

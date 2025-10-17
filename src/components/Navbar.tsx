@@ -7,6 +7,7 @@ import { ShoppingCart, Menu, X, Flame, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { Input } from "@/components/ui/input";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -87,6 +88,7 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <Link href="/cart">
               <Button variant="ghost" size="icon" className="relative">
                 <ShoppingCart className="h-5 w-5" />
@@ -138,6 +140,9 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
+              <div className="px-4">
+                <ThemeToggle />
+              </div>
             </div>
           </div>
         )}

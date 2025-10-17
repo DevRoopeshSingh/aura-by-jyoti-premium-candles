@@ -11,16 +11,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ProductCard from "@/components/ProductCard";
-import type { Product } from "@/data/products";
-
-interface Category {
-  id: string;
-  name: string;
-}
+import type { Product, CategoryRecord } from "@/types/content";
 
 interface ShopClientProps {
   products: Product[];
-  categories: Category[];
+  categories: CategoryRecord[];
 }
 
 const ShopClient = ({ products, categories }: ShopClientProps) => {
@@ -36,7 +31,7 @@ const ShopClient = ({ products, categories }: ShopClientProps) => {
     let results =
       selectedCategory === "all"
         ? products
-        : products.filter((product) => product.category === selectedCategory);
+        : products.filter((product) => product.category.id === selectedCategory);
 
     if (searchParam) {
       const lowered = searchParam.toLowerCase();
@@ -44,7 +39,8 @@ const ShopClient = ({ products, categories }: ShopClientProps) => {
         (product) =>
           product.name.toLowerCase().includes(lowered) ||
           product.description.toLowerCase().includes(lowered) ||
-          product.scent.toLowerCase().includes(lowered),
+          product.scent.toLowerCase().includes(lowered) ||
+          product.category.name.toLowerCase().includes(lowered),
       );
     }
 

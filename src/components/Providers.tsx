@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import ThemeProvider from "@/components/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -12,13 +13,15 @@ interface ProvidersProps {
 
 const Providers = ({ children }: ProvidersProps) => {
   return (
-    <TooltipProvider>
-      <CartProvider>
-        {children}
-        <Toaster />
-        <Sonner />
-      </CartProvider>
-    </TooltipProvider>
+    <ThemeProvider>
+      <TooltipProvider>
+        <CartProvider>
+          {children}
+          <Toaster />
+          <Sonner />
+        </CartProvider>
+      </TooltipProvider>
+    </ThemeProvider>
   );
 };
 

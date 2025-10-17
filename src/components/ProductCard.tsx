@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Leaf } from "lucide-react";
 import AddToCartButton from "@/components/AddToCartButton";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import type { Product } from "@/data/products";
+import type { Product } from "@/types/content";
 
 interface ProductCardProps {
   product: Product;
@@ -29,7 +29,7 @@ const ProductCard = ({ product }: ProductCardProps) => (
 
       <CardContent className="flex-grow p-4">
         <div className="mb-2 text-xs font-inter font-medium uppercase tracking-wider text-primary">
-          {product.category}
+          {product.category.name}
         </div>
         <h3 className="font-playfair mb-2 text-lg font-semibold text-foreground line-clamp-1">
           {product.name}
@@ -58,4 +58,3 @@ const ProductCard = ({ product }: ProductCardProps) => (
 );
 
 export default ProductCard;
-

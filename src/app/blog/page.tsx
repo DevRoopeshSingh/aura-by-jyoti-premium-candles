@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { headers } from "next/headers";
 import { Calendar, ArrowRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { blogPosts } from "@/data/blog";
+import { mapBlogPostRecord } from "@/lib/content-mappers";
+import type { BlogPost, BlogPostRecord } from "@/types/content";
 
 export const metadata: Metadata = {
   title: "Candle Care & Wellness Blog",
@@ -12,8 +14,37 @@ export const metadata: Metadata = {
     "Explore candle care tips, aromatherapy benefits, festive traditions, and gifting inspiration from Aura by Jyoti.",
 };
 
-const BlogPage = () => (
-  <div className="flex flex-col">
+const getBaseUrl = () => {
+  const host = headers().get("host");
+  const protocol = process.env.VERCEL ? "https" : "http";
+  return `${protocol}://${host}`;
+};
+
+const fetchBlogPosts = async (): Promise<BlogPost[]> => {
+  const res = await fetch(`${getBaseUrl()}/api/blog`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch blog posts");
+  }
+
+  const data = (await res.json()) as { posts: BlogPostRecord[] };
+  return data.posts.map(mapBlogPostRecord);
+};
+
+const formatPublishedDate = (iso: string) =>
+  new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(iso));
+
+const BlogPage = async () => {
+  const posts = await fetchBlogPosts();
+
+  return (
+    <div className="flex flex-col">
     <section className="bg-gradient-warm py-16 text-center">
       <div className="container mx-auto px-4">
         <h1 className="font-playfair text-4xl font-bold md:text-6xl">
@@ -28,7 +59,7 @@ const BlogPage = () => (
     <section className="py-16">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {blogPosts.map((post, index) => (
+          {posts.map((post, index) => (
             <Card
               key={post.id}
               className="group animate-fade-in cursor-pointer overflow-hidden border-border transition-elegant hover:shadow-elegant"
@@ -48,7 +79,7 @@ const BlogPage = () => (
                 <div className="mb-3 flex items-center gap-3 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    {post.date}
+                    {formatPublishedDate(post.publishedAt)}
                   </span>
                   <span className="inline-flex items-center gap-2">
                     <Clock className="h-4 w-4" />
@@ -64,7 +95,7 @@ const BlogPage = () => (
               </CardContent>
               <CardFooter className="p-6 pt-0">
                 <Link
-                  href={`/blog/${post.id}`}
+                  href={`/blog/${post.slug}`}
                   className="inline-flex items-center gap-2 font-medium text-primary transition-smooth hover:gap-3"
                 >
                   Read More
@@ -99,7 +130,7 @@ const BlogPage = () => (
       </div>
     </section>
   </div>
-);
+  );
+};
 
 export default BlogPage;
-
