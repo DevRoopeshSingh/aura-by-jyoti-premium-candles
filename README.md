@@ -1,17 +1,18 @@
 # Aura by Jyoti — Premium Candle Storefront
 
-An artisan e-commerce experience celebrating Jyoti’s handcrafted candles. Built with React + Vite, TypeScript, Tailwind CSS, and shadcn-ui, the site blends storytelling, product discovery, and WhatsApp-based checkout into a cohesive brand journey.
+An artisan e-commerce experience celebrating Jyoti’s handcrafted candles. The site now runs on **Next.js 14 (App Router)** with TypeScript, Tailwind CSS, and shadcn-ui to blend storytelling, product discovery, and WhatsApp-based ordering into a cohesive brand journey.
 
 ---
 
 ## ⚙️ Tech Stack
-- **Framework**: React 18 with React Router DOM
-- **Build Tooling**: Vite (SWC) + TypeScript
-- **Styling**: Tailwind CSS, custom design tokens, Tailwind Merge
-- **UI Kit**: shadcn-ui (Radix primitives styled with Tailwind)
-- **State Management**: React Context for the cart, React Query pre-configured
+- **Framework**: Next.js 14 (App Router) + React 18
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS with custom design tokens, Tailwind Merge
+- **UI Kit**: shadcn-ui (Radix UI primitives)
+- **State**: React Context (cart)
 - **Icons & Feedback**: lucide-react, sonner toasts, shadcn toaster
-- **Tooling**: ESLint, PostCSS, autoprefixer
+- **Fonts**: Playfair Display & Inter via `next/font`
+- **Tooling**: ESLint (`core-web-vitals`), PostCSS, autoprefixer
 
 ---
 
@@ -25,17 +26,16 @@ npm install
 npm run dev
 ```
 
-The dev server runs on `http://localhost:8080` (configured in `vite.config.ts`).
+The dev server runs on `http://localhost:3000` by default.
 
 ---
 
 ## 📦 NPM Scripts
 | Script | Description |
 | --- | --- |
-| `npm run dev` | Start the Vite dev server with HMR |
-| `npm run build` | Production build output to `dist/` |
-| `npm run build:dev` | Development-mode build (useful for debugging) |
-| `npm run preview` | Preview the built site locally |
+| `npm run dev` | Start the Next.js dev server with HMR |
+| `npm run build` | Create a production build in `.next/` |
+| `npm run start` | Serve the production build locally |
 | `npm run lint` | Run ESLint across the repo |
 
 ---
@@ -43,94 +43,98 @@ The dev server runs on `http://localhost:8080` (configured in `vite.config.ts`).
 ## 🗂️ Project Structure
 ```
 src/
- ├─ assets/           Brand imagery (hero, product shots, portrait)
- ├─ components/       Shared UI: Navbar, Footer, ProductCard, shadcn primitives
- ├─ contexts/         App-wide state providers (CartContext)
- ├─ data/             Static data sources (`products.ts`, `blog.ts`)
- ├─ hooks/            Utility hooks (mobile detection, toast helpers)
- ├─ lib/              Reusable utilities (Tailwind class merger)
- ├─ pages/            Route-level views (Index, Shop, ProductDetail, Blog, etc.)
- ├─ App.tsx           Router + global providers (toasts, tooltips, cart)
- └─ main.tsx          React entry point (`createRoot`)
+ ├─ app/                  App Router entrypoints, layouts, route groups
+ ├─ assets/               Brand imagery (hero, product shots, portrait)
+ ├─ components/
+ │   ├─ ui/               shadcn primitives
+ │   ├─ cart/             Cart-specific client components
+ │   ├─ product/          Product detail UI
+ │   ├─ blog/             Blog detail UI
+ │   ├─ shop/             Catalog filters and grid
+ │   └─ Providers.tsx     App-level providers (tooltips, cart, toasts)
+ ├─ contexts/             Global state (CartContext)
+ ├─ data/                 Static data (`products.ts`, `blog.ts`)
+ ├─ hooks/                Utility hooks (mobile detection, toast helpers)
+ ├─ lib/                  Reusable utilities (`cn` class merger)
+ └─ app/globals.css       Tailwind directives, tokens, gradients, shadows
 ```
 
 Config highlights:
+- `next.config.mjs` — Next.js configuration
 - `tailwind.config.ts` — Tailwind theme extensions + shadcn preset
-- `index.css` — Tailwind directives, custom color palette, gradients, shadows
-- `vite.config.ts` — SWC React plugin + `@` alias
-- `eslint.config.js` — lint rules and recommended presets
-- `tsconfig*.json` — TypeScript compiler options
+- `tsconfig.json` — TypeScript compiler settings
+- `eslint.config.js` — ESLint rules (includes Next core-web-vitals)
 
 ---
 
-## 🌐 Routing & Page Overview
-- `/` — **Home**: hero storytelling, feature highlights, featured products, newsletter CTA.
-- `/shop` — **Catalog**: category filters, search via query params, sorting controls, graceful empty states.
-- `/product/:id` — **Product Detail**: product story, trust badges, faux reviews, feature list, related products.
-- `/cart` — **Cart**: quantity controls, price breakdown, WhatsApp checkout handoff.
+## 🌐 Routing & Pages
+- `/` — **Home**: preloaded hero image, feature highlights, featured products, newsletter CTA.
+- `/shop` — **Catalog**: query-aware filters (Suspense-wrapped), client sorting, server-rendered product data.
+- `/product/[id]` — **Product Detail**: statically generated pages with trust badges, faux reviews, related products, add-to-cart.
+- `/cart` — **Cart**: client-managed quantities, totals, WhatsApp checkout.
 - `/about` — **Meet Jyoti**: founder story, brand values, process milestones.
-- `/contact` — **Contact & WhatsApp Form**: form submission opens WhatsApp with pre-filled message, static contact info blocks.
-- `/faq` — **FAQs**: accordion-based answers, consistent WhatsApp CTA & contact form link.
-- `/blog` — **Blog Index**: curated articles with publish date and reading time chips.
-- `/blog/:id` — **Blog Detail**: structured sections, tips, quotes, reading progress bar, share button, key takeaways, related posts.
-- `*` — **404**: simple not-found state with SPA navigation back home.
+- `/contact` — **Contact & WhatsApp Form**: WhatsApp-powered outreach plus direct contact info.
+- `/faq` — **FAQs**: accordion answers with consistent WhatsApp CTA and contact link.
+- `/blog` — **Blog Index**: SSG listing with publish date & reading time chips.
+- `/blog/[id]` — **Blog Detail**: structured sections, tips, quotes, reading progress bar, share button, takeaways, related posts.
+- `not-found.tsx` — custom 404 experience.
 
 ---
 
-## 🛒 Products & Cart
-- `src/data/products.ts` contains structured product metadata (category, scent, features, burn time).
-- `CartContext` manages items in memory with add/remove/update APIs and toast notifications.
-- Checkout is intentionally lightweight: “Checkout via WhatsApp” opens `wa.me` with an order summary directed to `+91 98765 43210`.
+## 🛒 Commerce & Data
+- `src/data/products.ts` stores structured product metadata (category, scent, burn time, features).
+- `CartContext` manages items in-memory (add/remove/update) with toast feedback.
+- Checkout is WhatsApp-based (`wa.me/919876543210`) for lightweight order capture.
 
 ---
 
 ## ✨ Blog System
-- `src/data/blog.ts` models each article with sections, tips, quotes, reading time, and takeaways.
-- Blog index surfaces metadata for quick scanning.
-- Blog detail page enhances reading flow with:
+- `src/data/blog.ts` models articles with sections, tips, quotes, reading time, takeaways.
+- Blog index is SSG; detail pages offer:
   - Scroll-progress indicator
-  - Share/copy handling (native share API with clipboard fallback)
-  - Highlighted excerpt + key takeaways
+  - Native share API with clipboard fallback
+  - Highlighted excerpt & key takeaways
   - Related post recommendations
 
 ---
 
 ## 🎨 Design Language
-- Palette, gradients, shadows, and transition tokens defined in `index.css`.
-- Utility classes like `.gradient-warm`, `.shadow-elegant`, `.transition-smooth` keep styling consistent.
-- Typography pairs Playfair Display (headlines) with Inter (body).
+- Color palette, gradients, shadows, and transition tokens live in `globals.css`.
+- Utility helpers (`.gradient-warm`, `.shadow-elegant`, `.transition-smooth`) ensure consistent theming.
+- Typography uses `next/font` to inline Playfair Display (headlines) and Inter (UI copy) via CSS variables referenced in Tailwind.
 
 ---
 
-## 🔄 SPA & UX Enhancements
-- Navbar search routes directly to `/shop?search=...` and resets cleanly from the catalog page.
-- FAQ contact options use consistent numbers and React Router navigation.
-- 404 “Return to Home” now leverages `<Link>` to avoid full reloads.
-- Blog “Read More” entries map to actual detail routes.
+## 🔄 UX & Performance Enhancements
+- Navbar search hydrates to `/shop?search=…` without full reloads.
+- Product cards are server components; the add-to-cart CTA is a tiny client component.
+- Hero imagery uses `next/image` with `priority` + blur placeholder for better Largest Contentful Paint (LCP).
+- Fonts load via `next/font` (display swap) to reduce blocking resources.
+- React Query was removed to shrink the JavaScript bundle; only necessary client components ship to the browser.
 
 ---
 
 ## ✅ Quality Notes
-- ESLint is configured (`npm run lint`) but currently flags upstream shadcn template issues (non-component exports, `require()` usage). Address these when updating the shadcn primitives.
-- React Query is instantiated but unused—kept ready for future remote data fetching.
-- No automated tests yet; Vitest + React Testing Library are the preferred stack when coverage becomes a priority.
+- `npm run lint` enforces Next.js core-web-vitals and TypeScript best practices.
+- `npm run build` validates type safety and static generation (SSG for catalog/blog).
+- No automated tests yet—recommend Vitest + React Testing Library (unit) and Playwright (end-to-end) as future additions.
 
 ---
 
 ## 📦 Build & Deployment
 ```sh
-npm run build     # creates production assets in dist/
-npm run preview   # serve the production build locally
+npm run build   # produce the production bundle
+npm start       # run the built app locally
 ```
-Deploy the contents of `dist/` to your static host of choice (Vercel, Netlify, Cloudflare Pages, etc.).
+Deploy to Vercel (ideal for Next.js) or any Node host that can execute `next start`. For optimal image performance in production, install the optional `sharp` dependency (`npm i sharp`).
 
 ---
 
 ## 🛠️ Future Ideas
-- Persist cart contents with localStorage for session continuity.
-- Fetch products/blog posts from a CMS or API using the existing React Query setup.
-- Add Vitest-based unit/integration tests around cart logic and key pages.
-- Replace WhatsApp checkout with a dedicated payment flow if business needs evolve.
+- Persist cart contents with `localStorage` or cookies for session continuity.
+- Fetch products and blog content from a headless CMS or database (use Next.js Route Handlers + Prisma or REST APIs).
+- Add Vitest/Playwright test coverage for cart flows and WhatsApp checkout.
+- Expand checkout beyond WhatsApp (Stripe Checkout, Razorpay, etc.) if business needs evolve.
 
 ---
 

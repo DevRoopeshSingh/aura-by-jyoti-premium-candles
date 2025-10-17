@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Flame, Instagram, Facebook, Mail, Phone, MapPin } from "lucide-react";
 
 const Footer = () => {
@@ -42,27 +42,27 @@ const Footer = () => {
             <h3 className="font-playfair text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/shop" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
+                <Link href="/shop" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
                   Shop All
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
+                <Link href="/about" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
                   About Jyoti
                 </Link>
               </li>
               <li>
-                <Link to="/blog" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
+                <Link href="/blog" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
+                <Link href="/contact" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
+                <Link href="/faq" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
                   FAQ
                 </Link>
               </li>
@@ -74,22 +74,22 @@ const Footer = () => {
             <h3 className="font-playfair text-lg font-semibold mb-4">Collections</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/shop?category=diwali" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
+                <Link href="/shop?category=diwali" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
                   Diwali Collection
                 </Link>
               </li>
               <li>
-                <Link to="/shop?category=wellness" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
+                <Link href="/shop?category=wellness" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
                   Wellness Candles
                 </Link>
               </li>
               <li>
-                <Link to="/shop?category=heritage" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
+                <Link href="/shop?category=heritage" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
                   Mumbai Heritage
                 </Link>
               </li>
               <li>
-                <Link to="/shop?category=gifts" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
+                <Link href="/shop?category=gifts" className="text-sm opacity-90 hover:text-primary hover:opacity-100 transition-smooth">
                   Custom Gifts
                 </Link>
               </li>

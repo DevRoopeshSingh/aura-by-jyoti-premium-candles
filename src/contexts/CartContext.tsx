@@ -1,3 +1,8 @@
+"use client";
+
+"use client";
+
+import type { StaticImageData } from "next/image";
 import { createContext, useContext, useState, ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -5,7 +10,7 @@ export interface CartItem {
   id: string;
   name: string;
   price: number;
-  image: string;
+  image: string | StaticImageData;
   quantity: number;
 }
 

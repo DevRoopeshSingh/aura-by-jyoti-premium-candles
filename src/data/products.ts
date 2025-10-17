@@ -1,3 +1,4 @@
+import type { StaticImageData } from "next/image";
 import diwaliCandle from "@/assets/diwali-candle.jpg";
 import wellnessCandle from "@/assets/wellness-candle.jpg";
 import heritageCandle from "@/assets/heritage-candle.jpg";
@@ -8,7 +9,7 @@ export interface Product {
   name: string;
   price: number;
   category: string;
-  image: string;
+  image: StaticImageData;
   description: string;
   features: string[];
   scent: string;

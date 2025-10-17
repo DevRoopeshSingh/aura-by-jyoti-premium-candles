@@ -1,3 +1,4 @@
+import type { StaticImageData } from "next/image";
 import heroImage from "@/assets/hero-candles.jpg";
 
 export interface BlogPostQuote {
@@ -17,7 +18,7 @@ export interface BlogPost {
   title: string;
   excerpt: string;
   date: string;
-  image: string;
+  image: StaticImageData;
   readingTime: string;
   sections: BlogPostSection[];
   takeaways: string[];
@@ -276,4 +277,3 @@ export const blogPosts: BlogPost[] = [
     ],
   },
 ];
-
