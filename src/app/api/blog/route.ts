@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { blogDbRecordToBlogPostRecord } from "@/lib/content-mappers";
 
 export const revalidate = 0;
 
@@ -15,17 +16,7 @@ export const GET = async (request: Request) => {
     take: Number.isFinite(limit) ? limit : undefined,
   });
 
-  const formatted = posts.map((post) => ({
-    id: post.id,
-    title: post.title,
-    excerpt: post.excerpt,
-    slug: post.slug,
-    image: post.image,
-    readingTime: post.readingTime,
-    sections: JSON.parse(post.sections),
-    takeaways: JSON.parse(post.takeaways),
-    publishedAt: post.publishedAt.toISOString(),
-  }));
+  const formatted = posts.map(blogDbRecordToBlogPostRecord);
 
   return NextResponse.json({ posts: formatted });
 };

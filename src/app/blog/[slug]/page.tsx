@@ -1,22 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
 import BlogPostClient from "@/components/blog/BlogPostClient";
 import prisma from "@/lib/prisma";
-import { mapBlogPostRecord } from "@/lib/content-mappers";
-import type { BlogPost, BlogPostRecord } from "@/types/content";
+import { blogDbRecordToBlogPostRecord, mapBlogPostRecord } from "@/lib/content-mappers";
 
 interface BlogPostPageProps {
   params: {
     slug: string;
   };
 }
-
-const getBaseUrl = () => {
-  const host = headers().get("host");
-  const protocol = process.env.VERCEL ? "https" : "http";
-  return `${protocol}://${host}`;
-};
 
 export const generateStaticParams = async () => {
   const posts = await prisma.blogPost.findMany({
@@ -37,17 +29,7 @@ export const generateMetadata = async ({
     return { title: "Article Not Found" };
   }
 
-  const mappedPost = mapBlogPostRecord({
-    id: post.id,
-    title: post.title,
-    excerpt: post.excerpt,
-    slug: post.slug,
-    image: post.image,
-    readingTime: post.readingTime,
-    sections: JSON.parse(post.sections),
-    takeaways: JSON.parse(post.takeaways),
-    publishedAt: post.publishedAt.toISOString(),
-  });
+  const mappedPost = mapBlogPostRecord(blogDbRecordToBlogPostRecord(post));
 
   return {
     title: mappedPost.title,
@@ -67,28 +49,26 @@ export const generateMetadata = async ({
 };
 
 const BlogPostPage = async ({ params }: BlogPostPageProps) => {
-  const baseUrl = getBaseUrl();
-  const response = await fetch(`${baseUrl}/api/blog/${params.slug}`, {
-    cache: "no-store",
+  const post = await prisma.blogPost.findUnique({
+    where: { slug: params.slug },
   });
 
-  if (response.status === 404) {
+  if (!post) {
     notFound();
   }
 
-  if (!response.ok) {
-    throw new Error("Failed to load blog post");
-  }
+  const relatedPosts = await prisma.blogPost.findMany({
+    where: { id: { not: post.id } },
+    orderBy: { publishedAt: "desc" },
+    take: 3,
+  });
 
-  const data = (await response.json()) as {
-    post: BlogPostRecord;
-    related: BlogPostRecord[];
-  };
+  const mappedPost = mapBlogPostRecord(blogDbRecordToBlogPostRecord(post));
+  const mappedRelated = relatedPosts
+    .map(blogDbRecordToBlogPostRecord)
+    .map(mapBlogPostRecord);
 
-  const post = mapBlogPostRecord(data.post);
-  const relatedPosts: BlogPost[] = data.related.map(mapBlogPostRecord);
-
-  return <BlogPostClient post={post} relatedPosts={relatedPosts} />;
+  return <BlogPostClient post={mappedPost} relatedPosts={mappedRelated} />;
 };
 
 export default BlogPostPage;

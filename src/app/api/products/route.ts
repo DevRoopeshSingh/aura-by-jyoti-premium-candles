@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
+import { productDbRecordToProductRecord } from "@/lib/content-mappers";
 
 const sortMap: Record<string, Prisma.ProductOrderByWithRelationInput> = {
   "price-low": { price: "asc" },
@@ -45,21 +46,7 @@ export const GET = async (request: Request) => {
     take: Number.isFinite(limit) ? limit : undefined,
   });
 
-  const formatted = products.map((product) => ({
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    description: product.description,
-    scent: product.scent,
-    burnTime: product.burnTime,
-    size: product.size,
-    image: product.image,
-    features: JSON.parse(product.features) as string[],
-    category: {
-      id: product.category.id,
-      name: product.category.name,
-    },
-  }));
+  const formatted = products.map(productDbRecordToProductRecord);
 
   return NextResponse.json({ products: formatted });
 };

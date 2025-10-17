@@ -1,41 +1,9 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import ShopClient from "@/components/shop/ShopClient";
-import { headers } from "next/headers";
-import { mapProductRecord } from "@/lib/content-mappers";
-import type { Product, CategoryRecord, ProductRecord } from "@/types/content";
-
-const getBaseUrl = () => {
-  const host = headers().get("host");
-  const protocol = process.env.VERCEL ? "https" : "http";
-  return `${protocol}://${host}`;
-};
-
-const fetchProducts = async (): Promise<Product[]> => {
-  const res = await fetch(`${getBaseUrl()}/api/products`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch products");
-  }
-
-  const data = (await res.json()) as { products: ProductRecord[] };
-  return data.products.map(mapProductRecord);
-};
-
-const fetchCategories = async (): Promise<CategoryRecord[]> => {
-  const res = await fetch(`${getBaseUrl()}/api/categories`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch categories");
-  }
-
-  const data = (await res.json()) as { categories: CategoryRecord[] };
-  return data.categories;
-};
+import prisma from "@/lib/prisma";
+import { mapProductRecord, productDbRecordToProductRecord } from "@/lib/content-mappers";
+import type { CategoryRecord } from "@/types/content";
 
 export const metadata: Metadata = {
   title: "Shop Handcrafted Candles",
@@ -44,7 +12,24 @@ export const metadata: Metadata = {
 };
 
 const ShopPage = async () => {
-  const [products, categories] = await Promise.all([fetchProducts(), fetchCategories()]);
+  const [productRows, categoryRows] = await Promise.all([
+    prisma.product.findMany({
+      include: { category: true },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.category.findMany({
+      orderBy: { name: "asc" },
+    }),
+  ]);
+
+  const products = productRows.map(productDbRecordToProductRecord).map(mapProductRecord);
+  const categories: CategoryRecord[] = [
+    { id: "all", name: "All Products" },
+    ...categoryRows.map((category) => ({
+      id: category.id,
+      name: category.name,
+    })),
+  ];
 
   return (
     <div className="flex flex-col">

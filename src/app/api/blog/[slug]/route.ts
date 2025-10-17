@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { blogDbRecordToBlogPostRecord } from "@/lib/content-mappers";
 
 interface RouteContext {
   params: {
@@ -27,27 +28,7 @@ export const GET = async (_request: Request, { params }: RouteContext) => {
   });
 
   return NextResponse.json({
-    post: {
-      id: post.id,
-      title: post.title,
-      excerpt: post.excerpt,
-      slug: post.slug,
-      image: post.image,
-      readingTime: post.readingTime,
-      sections: JSON.parse(post.sections),
-      takeaways: JSON.parse(post.takeaways),
-      publishedAt: post.publishedAt.toISOString(),
-    },
-    related: related.map((item) => ({
-      id: item.id,
-      title: item.title,
-      excerpt: item.excerpt,
-      slug: item.slug,
-      image: item.image,
-      readingTime: item.readingTime,
-      sections: JSON.parse(item.sections),
-      takeaways: JSON.parse(item.takeaways),
-      publishedAt: item.publishedAt.toISOString(),
-    })),
+    post: blogDbRecordToBlogPostRecord(post),
+    related: related.map(blogDbRecordToBlogPostRecord),
   });
 };

@@ -1,36 +1,16 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { headers } from "next/headers";
 import { Calendar, ArrowRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { mapBlogPostRecord } from "@/lib/content-mappers";
-import type { BlogPost, BlogPostRecord } from "@/types/content";
+import prisma from "@/lib/prisma";
+import { blogDbRecordToBlogPostRecord, mapBlogPostRecord } from "@/lib/content-mappers";
 
 export const metadata: Metadata = {
   title: "Candle Care & Wellness Blog",
   description:
     "Explore candle care tips, aromatherapy benefits, festive traditions, and gifting inspiration from Aura by Jyoti.",
-};
-
-const getBaseUrl = () => {
-  const host = headers().get("host");
-  const protocol = process.env.VERCEL ? "https" : "http";
-  return `${protocol}://${host}`;
-};
-
-const fetchBlogPosts = async (): Promise<BlogPost[]> => {
-  const res = await fetch(`${getBaseUrl()}/api/blog`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch blog posts");
-  }
-
-  const data = (await res.json()) as { posts: BlogPostRecord[] };
-  return data.posts.map(mapBlogPostRecord);
 };
 
 const formatPublishedDate = (iso: string) =>
@@ -41,7 +21,11 @@ const formatPublishedDate = (iso: string) =>
   }).format(new Date(iso));
 
 const BlogPage = async () => {
-  const posts = await fetchBlogPosts();
+  const posts = await prisma.blogPost.findMany({
+    orderBy: { publishedAt: "desc" },
+  });
+
+  const blogPosts = posts.map(blogDbRecordToBlogPostRecord).map(mapBlogPostRecord);
 
   return (
     <div className="flex flex-col">
@@ -59,7 +43,7 @@ const BlogPage = async () => {
     <section className="py-16">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post, index) => (
+          {blogPosts.map((post, index) => (
             <Card
               key={post.id}
               className="group animate-fade-in cursor-pointer overflow-hidden border-border transition-elegant hover:shadow-elegant"

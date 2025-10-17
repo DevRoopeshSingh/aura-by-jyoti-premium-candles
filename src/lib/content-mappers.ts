@@ -1,3 +1,4 @@
+import type { BlogPost as PrismaBlogPost, Category as PrismaCategory, Product as PrismaProduct } from "@prisma/client";
 import diwaliCandle from "@/assets/diwali-candle.jpg";
 import wellnessCandle from "@/assets/wellness-candle.jpg";
 import heritageCandle from "@/assets/heritage-candle.jpg";
@@ -31,4 +32,34 @@ export const mapProductRecord = (record: ProductRecord): Product => ({
 export const mapBlogPostRecord = (record: BlogPostRecord): BlogPost => ({
   ...record,
   image: blogImageMap[record.image] ?? fallbackImage,
+});
+
+type ProductWithCategory = PrismaProduct & { category: PrismaCategory };
+
+export const productDbRecordToProductRecord = (product: ProductWithCategory): ProductRecord => ({
+  id: product.id,
+  name: product.name,
+  price: product.price,
+  description: product.description,
+  scent: product.scent,
+  burnTime: product.burnTime,
+  size: product.size,
+  image: product.image,
+  features: JSON.parse(product.features) as string[],
+  category: {
+    id: product.category.id,
+    name: product.category.name,
+  },
+});
+
+export const blogDbRecordToBlogPostRecord = (post: PrismaBlogPost): BlogPostRecord => ({
+  id: post.id,
+  title: post.title,
+  excerpt: post.excerpt,
+  slug: post.slug,
+  image: post.image,
+  readingTime: post.readingTime,
+  sections: JSON.parse(post.sections) as BlogPostRecord["sections"],
+  takeaways: JSON.parse(post.takeaways) as string[],
+  publishedAt: post.publishedAt.toISOString(),
 });

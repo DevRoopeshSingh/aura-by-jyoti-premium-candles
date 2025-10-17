@@ -1,22 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { headers } from "next/headers";
 import ProductDetailClient from "@/components/product/ProductDetailClient";
 import prisma from "@/lib/prisma";
-import { mapProductRecord } from "@/lib/content-mappers";
-import type { Product, ProductRecord } from "@/types/content";
+import { mapProductRecord, productDbRecordToProductRecord } from "@/lib/content-mappers";
 
 interface ProductDetailPageProps {
   params: {
     id: string;
   };
 }
-
-const getBaseUrl = () => {
-  const host = headers().get("host");
-  const protocol = process.env.VERCEL ? "https" : "http";
-  return `${protocol}://${host}`;
-};
 
 export const generateStaticParams = async () => {
   const productIds = await prisma.product.findMany({
@@ -40,21 +32,7 @@ export const generateMetadata = async ({
     return { title: "Product Not Found" };
   }
 
-  const mappedProduct = mapProductRecord({
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    description: product.description,
-    scent: product.scent,
-    burnTime: product.burnTime,
-    size: product.size,
-    image: product.image,
-    features: JSON.parse(product.features),
-    category: {
-      id: product.category.id,
-      name: product.category.name,
-    },
-  });
+  const mappedProduct = mapProductRecord(productDbRecordToProductRecord(product));
 
   return {
     title: mappedProduct.name,
@@ -74,38 +52,31 @@ export const generateMetadata = async ({
 };
 
 const ProductDetailPage = async ({ params }: ProductDetailPageProps) => {
-  const baseUrl = getBaseUrl();
-  const productResponse = await fetch(`${baseUrl}/api/products/${params.id}`, {
-    cache: "no-store",
+  const productRow = await prisma.product.findUnique({
+    where: { id: params.id },
+    include: { category: true },
   });
 
-  if (productResponse.status === 404) {
+  if (!productRow) {
     notFound();
   }
 
-  if (!productResponse.ok) {
-    throw new Error("Failed to load product");
-  }
+  const productRecord = productDbRecordToProductRecord(productRow);
+  const product = mapProductRecord(productRecord);
 
-  const productData = (await productResponse.json()) as { product: ProductRecord };
-  const product = mapProductRecord(productData.product);
-
-  const relatedResponse = await fetch(
-    `${baseUrl}/api/products?category=${product.category.id}`,
-    {
-      cache: "no-store",
+  const relatedRows = await prisma.product.findMany({
+    where: {
+      categoryId: productRow.categoryId,
+      id: { not: productRow.id },
     },
-  );
+    include: { category: true },
+    orderBy: { createdAt: "desc" },
+    take: 4,
+  });
 
-  if (!relatedResponse.ok) {
-    throw new Error("Failed to load related products");
-  }
-
-  const relatedData = (await relatedResponse.json()) as { products: ProductRecord[] };
-  const relatedProducts: Product[] = relatedData.products
-    .filter((item) => item.id !== product.id)
-    .map(mapProductRecord)
-    .slice(0, 4);
+  const relatedProducts = relatedRows
+    .map(productDbRecordToProductRecord)
+    .map(mapProductRecord);
 
   return <ProductDetailClient product={product} relatedProducts={relatedProducts} />;
 };

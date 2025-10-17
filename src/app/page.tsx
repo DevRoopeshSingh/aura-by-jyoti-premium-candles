@@ -1,34 +1,22 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Leaf, Heart, Sparkles } from "lucide-react";
-import { headers } from "next/headers";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/ProductCard";
 import heroImage from "@/assets/hero-candles.jpg";
-import { mapProductRecord } from "@/lib/content-mappers";
-import type { Product, ProductRecord } from "@/types/content";
-
-const getBaseUrl = () => {
-  const host = headers().get("host");
-  const protocol = process.env.VERCEL ? "https" : "http";
-  return `${protocol}://${host}`;
-};
-
-const fetchFeaturedProducts = async (): Promise<Product[]> => {
-  const res = await fetch(`${getBaseUrl()}/api/products?limit=4`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch featured products");
-  }
-
-  const data = (await res.json()) as { products: ProductRecord[] };
-  return data.products.map(mapProductRecord);
-};
+import prisma from "@/lib/prisma";
+import { mapProductRecord, productDbRecordToProductRecord } from "@/lib/content-mappers";
 
 const HomePage = async () => {
-  const featuredProducts = await fetchFeaturedProducts();
+  const featuredProducts = await prisma.product.findMany({
+    include: { category: true },
+    orderBy: { createdAt: "desc" },
+    take: 4,
+  });
+
+  const products = featuredProducts
+    .map(productDbRecordToProductRecord)
+    .map(mapProductRecord);
 
   return (
     <div className="flex flex-col">
@@ -155,7 +143,7 @@ const HomePage = async () => {
           </div>
 
           <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {featuredProducts.map((product, index) => (
+            {products.map((product, index) => (
               <div
                 key={product.id}
                 className="animate-fade-in"
