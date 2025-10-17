@@ -1,55 +1,10 @@
 import { Link } from "react-router-dom";
-import { Calendar, ArrowRight } from "lucide-react";
+import { Calendar, ArrowRight, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import heroImage from "@/assets/hero-candles.jpg";
-
-const blogPosts = [
-  {
-    id: "1",
-    title: "The Complete Guide to Candle Care",
-    excerpt: "Learn how to make your candles last longer and burn beautifully with these essential care tips.",
-    date: "March 15, 2024",
-    image: heroImage,
-  },
-  {
-    id: "2",
-    title: "Aromatherapy Benefits of Lavender Candles",
-    excerpt: "Discover how lavender-scented candles can improve your sleep, reduce stress, and enhance wellbeing.",
-    date: "March 10, 2024",
-    image: heroImage,
-  },
-  {
-    id: "3",
-    title: "Diwali Traditions and Candle Rituals",
-    excerpt: "Explore the significance of diyas and candles in Indian festivals and how to create beautiful arrangements.",
-    date: "March 5, 2024",
-    image: heroImage,
-  },
-  {
-    id: "4",
-    title: "Why Choose Eco-Friendly Soy Candles",
-    excerpt: "Understanding the environmental and health benefits of natural soy wax over paraffin candles.",
-    date: "February 28, 2024",
-    image: heroImage,
-  },
-  {
-    id: "5",
-    title: "Creating the Perfect Ambiance at Home",
-    excerpt: "Tips and tricks for using candles to transform your living space into a serene sanctuary.",
-    date: "February 20, 2024",
-    image: heroImage,
-  },
-  {
-    id: "6",
-    title: "Gift Ideas: Personalized Candle Sets",
-    excerpt: "Make your gifts memorable with custom candle arrangements perfect for any occasion.",
-    date: "February 15, 2024",
-    image: heroImage,
-  },
-];
+import { blogPosts } from "@/data/blog";
 
 const Blog = () => {
   return (
@@ -87,9 +42,15 @@ const Blog = () => {
                     />
                   </div>
                   <CardContent className="p-6">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                      <Calendar className="h-4 w-4" />
-                      {post.date}
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
+                      <span className="inline-flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        {post.date}
+                      </span>
+                      <span className="inline-flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        {post.readingTime}
+                      </span>
                     </div>
                     <h2 className="font-playfair text-xl font-bold mb-3 group-hover:text-primary transition-smooth">
                       {post.title}

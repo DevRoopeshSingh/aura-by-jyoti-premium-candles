@@ -107,12 +107,12 @@ const Shop = () => {
             </div>
             
             {/* Search Results Info */}
-            {searchParam && (
-              <div className="mt-4 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Showing results for <span className="font-semibold text-foreground">"{searchParam}"</span>
-                </p>
-              </div>
+                {searchParam && (
+                  <div className="mt-4 text-center">
+                    <p className="text-sm text-muted-foreground">
+                      Showing results for <span className="font-semibold text-foreground">"{searchParam}"</span>
+                    </p>
+                  </div>
             )}
           </div>
         </section>
@@ -144,10 +144,14 @@ const Shop = () => {
                   {searchParam ? `No products found for "${searchParam}"` : "No products found in this category."}
                 </p>
                 {searchParam && (
-                  <Button variant="outline" onClick={() => {
-                    setSearchParams({});
-                    window.location.href = "/shop";
-                  }}>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const nextParams = new URLSearchParams(searchParams.toString());
+                      nextParams.delete("search");
+                      setSearchParams(nextParams);
+                    }}
+                  >
                     Clear Search
                   </Button>
                 )}

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
@@ -94,7 +95,7 @@ const FAQ = () => {
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <a
-                  href="https://wa.me/919999999999?text=Hi%20Jyoti,%20I%20have%20a%20question%20about%20your%20candles"
+                  href="https://wa.me/919876543210?text=Hi%20Jyoti,%20I%20have%20a%20question%20about%20your%20candles"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-lg font-medium hover:bg-[#20BA5A] transition-smooth"
@@ -104,12 +105,12 @@ const FAQ = () => {
                   </svg>
                   WhatsApp Us
                 </a>
-                <a
-                  href="/contact"
+                <Link
+                  to="/contact"
                   className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg font-medium hover:bg-muted transition-smooth"
                 >
                   Contact Form
-                </a>
+                </Link>
               </div>
             </div>
           </div>
